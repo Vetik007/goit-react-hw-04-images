@@ -22,6 +22,9 @@ const App = () => {
 
   // Замість сомпоненту життевого циклу componentDidUpdate використовуємо хук useEffect який буде реагувати на кожну зміну залежностей. В залежності передаємо властивості searchText, currentPage стан яких зберігається у  useState
   useEffect(() => {
+    if (!searchText) {
+      return;
+    }
     // функція яка виконує запит на сервер
     const fetchData = async () => {
       // запуск спінера
@@ -40,17 +43,33 @@ const App = () => {
       }
     };
 
-    // перевіряємо, чи відбулися зміни у searchText або currentPage. Якщо searchText не є пустим рядком або currentPage не дорівнює 1 викликаємо функцію fetchData,
-    //  тобто виконання запиту на сервер відбувається тільки у випадку, якщо зміниться searchText(текст пошуку) або currentPage(номер поточної сторінки).
-    if (searchText !== '' || currentPage !== 1) {
-      fetchData();
-    }
+    fetchData();
   }, [searchText, currentPage]);
+
+  // перевіряємо, чи відбулися зміни у searchText або currentPage. Якщо searchText не є пустим рядком або currentPage не дорівнює 1 викликаємо функцію fetchData,
+  //  тобто виконання запиту на сервер відбувається тільки у випадку, якщо зміниться searchText(текст пошуку) або currentPage(номер поточної сторінки).
+  //   if (searchText !== '' || currentPage !== 1) {
+  //     fetchData();
+  //   }
+  // }, [searchText, currentPage]);
 
   //  використовуємо хук useCallback який оптимізує функціональні компоненти шляхом кешування і повторного використання колбеків.
   //функція handleSubmit встановлює нові (оновлює) значення властивостей стан яких зберігається у useState.
   // useCallback буде повертатися знову тільки в разі зміни залежностей.
-  const handleSubmit = useCallback(searchValue => {
+  // const handleSubmit = useCallback(searchValue => {
+  //   setSearchText(searchValue);
+  //   setCurrentPage(1);
+  //   setImages([]);
+  //   setLoading(false);
+  //   setShowModal(false);
+  //   setError(null);
+  //   setTotalPage(null);
+  // }, []);
+
+  const handleSubmit = searchValue => {
+    if (searchText === searchValue) {
+      return;
+    }
     setSearchText(searchValue);
     setCurrentPage(1);
     setImages([]);
@@ -58,26 +77,42 @@ const App = () => {
     setShowModal(false);
     setError(null);
     setTotalPage(null);
-  }, []);
+  };
 
   // функція яка збільшує значення currentPage на 1. Вона використовує попереднє значення currentPage як аргумент у функції обновлення стану setCurrentPage.
-  const onLoadMore = useCallback(() => {
+
+  const onLoadMore = () => {
     setCurrentPage(prevPage => prevPage + 1);
-  }, []);
+  };
+
+  // const onLoadMore = useCallback(() => {
+  //   setCurrentPage(prevPage => prevPage + 1);
+  // }, []);
 
   // встановлюємо значення showModal на true(відкрити модалку), та оновлюємо значення imgUrl і tag.
-  const onOpenModal = useCallback((imgUrl, tag) => {
+
+  const onOpenModal = (imgUrl, tag) => {
     setShowModal(true);
     setImgUrl(imgUrl);
-    // console.log(imgUrl);
     setTag(tag);
-    // console.log(tag);
-  }, []);
+  };
+
+  // const onOpenModal = useCallback((imgUrl, tag) => {
+  //   setShowModal(true);
+  //   setImgUrl(imgUrl);
+  //   // console.log(imgUrl);
+  //   setTag(tag);
+  //   // console.log(tag);
+  // }, []);
 
   // закриваємо модалку
-  const onCloseModal = useCallback(() => {
+  const onCloseModal = () => {
     setShowModal(false);
-  }, []);
+  };
+
+  // const onCloseModal = useCallback(() => {
+  //   setShowModal(false);
+  // }, []);
 
   return (
     <>
@@ -158,17 +193,17 @@ export default App;
 //   }
 
 //   //  запит пошуку в App з Searchbar
-//   handleSubmit = searchValue => {
-//     this.setState({
-//       searchText: searchValue,
-//       currentPage: 1,
-//       images: [],
-//       loading: false,
-//       showModal: false,
-//       error: null,
-//       totalPage: null,
-//     });
-//   };
+// handleSubmit = searchValue => {
+//   this.setState({
+//     searchText: searchValue,
+//     currentPage: 1,
+//     images: [],
+//     loading: false,
+//     showModal: false,
+//     error: null,
+//     totalPage: null,
+//   });
+// };
 
 //   // кнопка завантаження наступних фото
 //   onLoadMore = () => {
